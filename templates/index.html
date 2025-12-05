@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>YouTube Manager</title>
+
+    <style>
+        /* ---------------------------- */
+        /* Global Dark Theme            */
+        /* ---------------------------- */
+        body {
+            background: #121212;
+            color: #e5e5e5;
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            text-shadow: 0 0 8px #ff0040;
+        }
+
+        h2 {
+            margin-top: 30px;
+            color: #f0f0f0;
+            border-left: 4px solid #ff0040;
+            padding-left: 10px;
+        }
+
+        /* ---------------------------- */
+        /* Card layout                  */
+        /* ---------------------------- */
+        .card {
+            background: rgba(30, 30, 30, 0.7);
+            backdrop-filter: blur(6px);
+            border: 1px solid #292929;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 12px rgba(255, 0, 60, 0.15);
+        }
+
+        /* ---------------------------- */
+        /* Inputs & Buttons             */
+        /* ---------------------------- */
+        input, select, button {
+            background: #1f1f1f;
+            color: #f0f0f0;
+            border: 1px solid #333;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 5px;
+            width: 100%;
+            font-size: 15px;
+        }
+
+        button {
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.25s ease;
+            border: 1px solid #ff0040;
+        }
+
+        button:hover {
+            background: #ff0040;
+            color: black;
+            box-shadow: 0 0 12px #ff0040;
+        }
+
+        /* ---------------------------- */
+        /* Channel List                 */
+        /* ---------------------------- */
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 10px;
+        }
+
+        li {
+            background: #1c1c1c;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            border: 1px solid #333;
+        }
+
+        /* ---------------------------- */
+        /* Monitor Panel                */
+        /* ---------------------------- */
+        #monitor {
+            background: #000;
+            color: #00ff9d;
+            border: 1px solid #00ff9d;
+            padding: 12px;
+            border-radius: 10px;
+            height: 260px;
+            overflow-y: auto;
+            margin-top: 10px;
+            font-family: "Consolas", monospace;
+            font-size: 14px;
+            box-shadow: 0 0 12px rgba(0, 255, 160, 0.25);
+        }
+
+        /* ---------------------------- */
+        /* Layout Grid                  */
+        /* ---------------------------- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>YouTube Channel Manager</h1>
+
+    <div class="grid">
+
+        <!-- Add Channel -->
+        <div class="card">
+            <h2>Add Channel</h2>
+            <form method="POST" action="/add_channel">
+                <input type="text" name="channel_url" placeholder="Channel URL">
+                <button type="submit">Add</button>
+            </form>
+        </div>
+
+        <!-- Remove Channel -->
+        <div class="card">
+            <h2>Remove Channel</h2>
+            <form method="POST" action="/remove_channel">
+                <select name="channel_index">
+                    {% for c in channels %}
+                    <option value="{{ loop.index0 }}">{{ c }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Remove</button>
+            </form>
+        </div>
+
+        <!-- Actions -->
+        <div class="card">
+            <h2>Actions</h2>
+            <form method="POST" action="/start_watch">
+                <button type="submit">Start/stop Watch Channel</button>
+            </form>
+            <br>
+            <form method="POST" action="/start_download">
+                <button type="submit">Start/stop Download Videos</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Channel List -->
+    <div class="card">
+        <h2>Channels</h2>
+        <ul>
+            {% for c in channels %}
+            <li>{{ c }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Monitor -->
+    <div class="card">
+        <h2>Monitor</h2>
+        <pre id="monitor"></pre>
+    </div>
+
+    <script>
+        async function refreshMonitor() {
+            const r = await fetch("/monitor");
+            const data = await r.json();
+            document.getElementById("monitor").textContent =
+                JSON.stringify(data, null, 2);
+        }
+        setInterval(refreshMonitor, 2000);
+        refreshMonitor();
+    </script>
+
+</body>
+</html>
