@@ -6,6 +6,7 @@ import fdownload_download
 import fdownload_channels
 
 
+
 app = Flask(__name__)
 
 # ---------------------------------------------------------
@@ -34,13 +35,15 @@ def download_videos_worker():
     logger.info("Processus 'download videos' démarré.")
     fdownload_download.download_videos()
 
+channels=[]
 
 # ---------------------------------------------------------
 # Interface utilisateur
 # ---------------------------------------------------------
 @app.route("/")
 def index():
-    channels = [] # get from DB
+    global channels
+    channels = fdownload_channels.get_all_channels() # get from DB
     return render_template("index.html", channels=channels)
 
 
@@ -51,25 +54,25 @@ def add_channel():
     if not url:
         logger.warning("Tentative d'ajout de chaîne sans URL.")
         return redirect(url_for("index"))
-    urld = {url: None}
-    fdownload_channels.channel.create(urld)
-    
+    name = request.form.get("channel_name")
+    fdownload_channels.add_channel(url,name)
     logger.info(f"Chaîne ajoutée : {url}")
     return redirect(url_for("index"))
 
 
 @app.route("/remove_channel", methods=["POST"])
 def remove_channel():
+    global channels
     index = request.form.get("channel_index")
     if index is None:
         logger.warning("Tentative de suppression sans index.")
         return redirect(url_for("index"))
 
     index = int(index)
-    if 0 <= index < 0: #len(channels):
-#        removed = channels.pop(index)
-#        logger.info(f"Chaîne retirée : {removed}")
-        logger.error("Not Implemented - remove_channel")
+    if 0 <= index < len(channels):
+        removed = channels.pop(index)
+        fdownload_channels.remove_channel(removed['url'])
+        logger.info(f"Chaîne retirée : {removed["name"]}")
     else:
         logger.warning("Index de chaîne invalide.")
     return redirect(url_for("index"))

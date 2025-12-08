@@ -27,6 +27,20 @@ download_config ={ "--concurrent-fragments":[4,True],
 }
 
 
+
+default_settings = {
+    "active": "True", 
+    "remove_ads": "False",
+    "download_subtitles": "False",
+    "merge_subtitles": "False",
+    "video_description": "False",
+    "download_shorts": "True", # [url]/shorts
+    "download_videos": "True", # [url]/videos
+    "download_completed_live": "True", # was_live=True, ended_live=True, is_live=False
+}
+
+DEFAULT_DOWNLOAD_PATH = "/mnt/AllVideo/0082-youtube/"
 minimum_scan_time = 600  # in seconds
 DOWNLOAD_FIFO = '/tmp/fdownload_fifo'
 DB_LOCATION = "/tmp/fdownload.sqlite"
+DB_NAME = f"{DB_LOCATION}/data.db"

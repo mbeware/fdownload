@@ -126,6 +126,8 @@
             <h2>Add Channel</h2>
             <form method="POST" action="/add_channel">
                 <input type="text" name="channel_url" placeholder="Channel URL">
+                <input type="text" name="channel_name" placeholder="Channel name (optional)">
+                <input type="text" name="channel_folder" placeholder="Downloaded videos folder (optional)">
                 <button type="submit">Add</button>
             </form>
         </div>
@@ -136,7 +138,7 @@
             <form method="POST" action="/remove_channel">
                 <select name="channel_index">
                     {% for c in channels %}
-                    <option value="{{ loop.index0 }}">{{ c }}</option>
+                    <option value="{{ loop.index0 }}">{{ c.name }}</option>
                     {% endfor %}
                 </select>
                 <button type="submit">Remove</button>
@@ -162,7 +164,7 @@
         <h2>Channels</h2>
         <ul>
             {% for c in channels %}
-            <li>{{ c }}</li>
+            <li>{{ c.name }} : {{ c.url }} </li>
             {% endfor %}
         </ul>
     </div>
